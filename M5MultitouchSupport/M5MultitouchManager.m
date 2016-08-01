@@ -14,6 +14,9 @@
 #import "M5MultitouchTouchInternal.h"
 #import "M5MultitouchEventInternal.h"
 
+NSOperatingSystemVersion M5OperatingSystemSierra = (NSOperatingSystemVersion){10, 12, 0};
+
+
 @implementation M5MultitouchManager {
     @private
     NSMutableArray *_multitouchListeners, *_multitouchDevices;
@@ -192,7 +195,9 @@ static BOOL laptopLidClosed;
             MTDeviceRef mtDevice = (__bridge MTDeviceRef)device;
             MTUnregisterContactFrameCallback(mtDevice, mtEventHandler);
             MTDeviceStop(mtDevice);
-            MTDeviceRelease(mtDevice);
+            if (![NSProcessInfo.processInfo isOperatingSystemAtLeastVersion:M5OperatingSystemSierra]) {
+                MTDeviceRelease(mtDevice);
+            }
         } @catch (NSException *exception) {}
     }
 }
